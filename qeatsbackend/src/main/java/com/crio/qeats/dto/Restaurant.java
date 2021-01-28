@@ -41,7 +41,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Restaurant {
 
-    int restaurantId;
+    String restaurantId;
     String name;
     String city;
     String imageUrl;
