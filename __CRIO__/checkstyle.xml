@@ -16,8 +16,8 @@
     http://checkstyle.sf.net (or in your downloaded distribution).
     To completely disable a check, just comment it out or delete it from the file.
     Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
- -->
 
+-->
 <module name="Checker">
   <module name="FileTabCharacter">
     <property name="eachLine" value="true"/>
@@ -252,3 +252,5 @@
 
   <property name="severity" value="error"/>
 </module>
+
+ 
