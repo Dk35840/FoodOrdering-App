@@ -6,7 +6,6 @@
 
 package com.crio.qeats.controller;
 
-
 import com.crio.qeats.exchanges.GetRestaurantsRequest;
 import com.crio.qeats.exchanges.GetRestaurantsResponse;
 import com.crio.qeats.services.RestaurantService;
@@ -30,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 // Implement Controller using Spring annotations.
 // Remember, annotations have various "targets". They can be class level, method level or others.
 
+@RestController
 @RequestMapping(RestaurantController.RESTAURANT_API_ENDPOINT)
 public class RestaurantController {
 
@@ -55,6 +55,8 @@ public class RestaurantController {
     log.info("getRestaurants called with {}", getRestaurantsRequest);
     GetRestaurantsResponse getRestaurantsResponse;
 
+    // log.info(getRestaurantsRequest.getLatitude());
+     
     //CHECKSTYLE:OFF
     if (getRestaurantsRequest.getLatitude() != null && getRestaurantsRequest.getLongitude() != null
         && getRestaurantsRequest.getLatitude() >= -90 && getRestaurantsRequest.getLatitude() <= 90
