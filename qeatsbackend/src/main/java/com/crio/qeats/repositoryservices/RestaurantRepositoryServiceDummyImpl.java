@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 @Repository
-public class RestaurantRepositoryServiceDummyImpl implements RestaurantRepositoryService {
+public class RestaurantRepositoryServiceDummyImpl {
 
   private static final String FIXTURES = "fixtures/exchanges";
   private ObjectMapper objectMapper = new ObjectMapper();
@@ -34,7 +34,7 @@ public class RestaurantRepositoryServiceDummyImpl implements RestaurantRepositor
   // It will load some dummy restaurants and change their latitude/longitude near
   // the lat/long you pass. In the next module, once you start using mongodb, you will not use
   // it anymore.
-  @Override
+ // @Override
   public List<Restaurant> findAllRestaurantsCloseBy(Double latitude, Double longitude,
       LocalTime currentTime, Double servingRadiusInKms) {
 

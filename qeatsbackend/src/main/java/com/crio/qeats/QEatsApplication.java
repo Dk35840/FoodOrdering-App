@@ -36,7 +36,6 @@ public class QEatsApplication {
   @Scope("prototype")
   public ModelMapper modelMapper() {
 
-    
     return new ModelMapper();
   }
 

@@ -71,7 +71,6 @@ public class RestaurantServiceMockitoTestStub {
     //  What to do with this Restaurant[] ? Looks unused?
     //  Look for the "assert" statements in the tests
     //  following and find out what to do with the array.
-
   }
 
 
@@ -149,7 +148,6 @@ public class RestaurantServiceMockitoTestStub {
     assertEquals(2, allRestaurantsCloseByPeakHours.getRestaurants().size());
     assertEquals("12", allRestaurantsCloseByPeakHours.getRestaurants().get(0).getRestaurantId());
     assertEquals("14", allRestaurantsCloseByPeakHours.getRestaurants().get(1).getRestaurantId());
-
   }
 
 }

@@ -27,6 +27,5 @@ public interface RestaurantService {
   GetRestaurantsResponse findAllRestaurantsCloseBy(
       GetRestaurantsRequest getRestaurantsRequest, LocalTime currentTime);
 
-      
 
 }
