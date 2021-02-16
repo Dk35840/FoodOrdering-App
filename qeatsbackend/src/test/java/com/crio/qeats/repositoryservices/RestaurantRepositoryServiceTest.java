@@ -77,6 +77,7 @@ public class RestaurantRepositoryServiceTest {
     for (RestaurantEntity restaurantEntity : allRestaurants) {
       mongoTemplate.save(restaurantEntity, "restaurants");
     }
+    
     when(restaurantRepository.findAll()).thenReturn(allRestaurants);
   }
 

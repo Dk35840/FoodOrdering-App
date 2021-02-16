@@ -64,13 +64,25 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
 
   public List<Restaurant> findAllRestaurantsCloseBy(Double latitude,
       Double longitude, LocalTime currentTime, Double servingRadiusInKms) {
+ 
+    Query query = new Query();
+    // query.addCriteria(Criteria.where("latitude").near(latitude).and("longitude").is(longitude));
+      
 
-        Query query = new Query();
-        query.addCriteria(Criteria.where("latitude").is(latitude).and("longitude").is(longitude)
-        .and("currentTime").is(currentTime).and("servingRadiusInKms").is(servingRadiusInKms));
-
-    List<Restaurant> restaurants = mongoTemplate.find(query,Restaurant.class);
+    List<RestaurantEntity> restaurantEntity = mongoTemplate.find(query,RestaurantEntity.class);
     
+    
+    List<Restaurant> restaurants = new ArrayList<>();
+
+    for (RestaurantEntity re : restaurantEntity){
+      if (isRestaurantCloseByAndOpen(re,currentTime,latitude,longitude,servingRadiusInKms)) {
+        Restaurant res = modelMapperProvider.get().map(re,Restaurant.class);
+        restaurants.add(res);
+      }
+    }
+    
+
+    System.out.println("RestaurantRepositoryServiceImpl" + restaurants);
 
     return restaurants;
   }
@@ -93,10 +105,12 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
    */
   private boolean isRestaurantCloseByAndOpen(RestaurantEntity restaurantEntity,
       LocalTime currentTime, Double latitude, Double longitude, Double servingRadiusInKms) {
+
     if (isOpenNow(currentTime, restaurantEntity)) {
+
       return GeoUtils.findDistanceInKm(latitude, longitude,
           restaurantEntity.getLatitude(), restaurantEntity.getLongitude())
-          < servingRadiusInKms;
+          <= servingRadiusInKms;
     }
 
     return false;

@@ -88,7 +88,7 @@ public class RestaurantServiceMockitoTestStub {
                 eq(5.0)))
             .thenReturn(Arrays.asList(restaurant1, restaurant2));
             
-    System.out.println(restaurantService);        
+    //System.out.println(restaurantService);        
     GetRestaurantsResponse allRestaurantsCloseBy = restaurantService
         .findAllRestaurantsCloseBy(new GetRestaurantsRequest(20.0, 30.0),
             LocalTime.of(3, 0));
