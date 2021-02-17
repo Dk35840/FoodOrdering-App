@@ -30,18 +30,16 @@ import java.util.stream.Collectors;
 import javax.inject.Provider;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-
+@Primary
 @Service
 public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryService {
-
-
-
 
   @Autowired
   private MongoTemplate mongoTemplate;
@@ -69,14 +67,12 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
  
     List<RestaurantEntity> restaurantEntity = restaurantRepository.findAll();
         
-    //Query query = new Query();  
-
-    // List<RestaurantEntity> restaurantEntity = mongoTemplate.find(query,RestaurantEntity.class);
-    
+   
+    //List<RestaurantEntity> restaurantEntity = mongoTemplate.findAll(RestaurantEntity.class);
     
     List<Restaurant> restaurants = new ArrayList<>();
 
-    for (RestaurantEntity re : restaurantEntity){
+    for (RestaurantEntity re : restaurantEntity) {
       if (isRestaurantCloseByAndOpen(re,currentTime,latitude,longitude,servingRadiusInKms)) {
         Restaurant res = modelMapperProvider.get().map(re,Restaurant.class);
         restaurants.add(res);
