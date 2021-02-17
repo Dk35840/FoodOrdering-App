@@ -47,6 +47,8 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
   private MongoTemplate mongoTemplate;
 
   @Autowired
+  private RestaurantRepository restaurantRepository;
+  @Autowired
   private Provider<ModelMapper> modelMapperProvider;
 
   private boolean isOpenNow(LocalTime time, RestaurantEntity res) {
@@ -65,11 +67,11 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
   public List<Restaurant> findAllRestaurantsCloseBy(Double latitude,
       Double longitude, LocalTime currentTime, Double servingRadiusInKms) {
  
-    Query query = new Query();
-    // query.addCriteria(Criteria.where("latitude").near(latitude).and("longitude").is(longitude));
-      
+    List<RestaurantEntity> restaurantEntity = restaurantRepository.findAll();
+        
+    //Query query = new Query();  
 
-    List<RestaurantEntity> restaurantEntity = mongoTemplate.find(query,RestaurantEntity.class);
+    // List<RestaurantEntity> restaurantEntity = mongoTemplate.find(query,RestaurantEntity.class);
     
     
     List<Restaurant> restaurants = new ArrayList<>();
