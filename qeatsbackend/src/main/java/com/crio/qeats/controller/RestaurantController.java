@@ -80,7 +80,7 @@ public class RestaurantController {
             "null","null",new ArrayList<>());
         getRestaurantsResponse.setRestaurants(Arrays.asList(r));
       }
-      System.out.println(getRestaurantsResponse);
+      // System.out.println(getRestaurantsResponse);
       return ResponseEntity.ok().body(getRestaurantsResponse);
     } else {
       return ResponseEntity.badRequest().body(null);
