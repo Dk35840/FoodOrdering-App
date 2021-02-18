@@ -55,7 +55,7 @@ public class RestaurantController {
     log.info("getRestaurants called with {}", getRestaurantsRequest);
     GetRestaurantsResponse getRestaurantsResponse;
 
-    // log.info(getRestaurantsRequest.getLatitude());
+    log.info(getRestaurantsRequest.getLatitude());
      
     //CHECKSTYLE:OFF
     if (getRestaurantsRequest.getLatitude() != null && getRestaurantsRequest.getLongitude() != null
