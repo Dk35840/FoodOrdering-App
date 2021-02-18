@@ -75,6 +75,18 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
     for (RestaurantEntity re : restaurantEntity) {
       if (isRestaurantCloseByAndOpen(re,currentTime,latitude,longitude,servingRadiusInKms)) {
         Restaurant res = modelMapperProvider.get().map(re,Restaurant.class);
+        String name = res.getName();
+        StringBuilder sb = new StringBuilder();
+
+        for (char ch : name.toCharArray()) {
+          if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == ' ') {
+            sb.append(ch);
+          }
+
+          res.setName(sb.toString());
+        }
+
+
         restaurants.add(res);
       }
     }
