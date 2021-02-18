@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,20 +63,27 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
   // 2. Remember to keep the precision of GeoHash in mind while using it as a key.
   // Check RestaurantRepositoryService.java file for the interface contract.
 
-  public List<Restaurant> findAllRestaurantsCloseBy(Double latitude,
-      Double longitude, LocalTime currentTime, Double servingRadiusInKms) {
- 
+  public List<Restaurant> findAllRestaurantsCloseBy(Double latitude, Double longitude,
+      LocalTime currentTime, Double servingRadiusInKms) {
+
     List<RestaurantEntity> restaurantEntity = restaurantRepository.findAll();
-        
-   
-    //List<RestaurantEntity> restaurantEntity = mongoTemplate.findAll(RestaurantEntity.class);
-    
+
+    // List<RestaurantEntity> restaurantEntity =
+    // mongoTemplate.findAll(RestaurantEntity.class);
+
     List<Restaurant> restaurants = new ArrayList<>();
 
     for (RestaurantEntity re : restaurantEntity) {
-      if (isRestaurantCloseByAndOpen(re,currentTime,latitude,longitude,servingRadiusInKms)) {
-        Restaurant res = modelMapperProvider.get().map(re,Restaurant.class);
-        String name = res.getName();
+      if (isRestaurantCloseByAndOpen(re, currentTime, latitude, longitude, servingRadiusInKms)) {
+        Restaurant res = modelMapperProvider.get().map(re, Restaurant.class);
+        String name = null;
+        try {
+          name = new String(res.getName().getBytes("ISO-8859-1"), "utf-8");
+        } catch (UnsupportedEncodingException e) {
+          // TODO Auto-generated catch block
+          name = "dummy";
+        }
+
         StringBuilder sb = new StringBuilder();
         System.out.println("Before" + name);
         for (char ch : name.toCharArray()) {
