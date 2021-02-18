@@ -45,16 +45,19 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     List<Restaurant> restaurant;
 
-     if(hour>=8 && hour<10 || hour ==10 && min==0 || hour>=13 && hour<14 || hour==14 && min==0 || hour>=19 && hour<21 || hour==21 && min==0){
-      restaurant= restaurantRepositoryService
-      .findAllRestaurantsCloseBy(getRestaurantsRequest.getLatitude(),getRestaurantsRequest.getLongitude(),currentTime,peakHoursServingRadiusInKms);
-     } else{
-      restaurant= restaurantRepositoryService
-      .findAllRestaurantsCloseBy(getRestaurantsRequest.getLatitude(),getRestaurantsRequest.getLongitude(),currentTime,normalHoursServingRadiusInKms);
-     }
+    if (hour >= 8 && hour < 10 || hour == 10 && min == 0 || hour >= 13 && hour < 14
+        || hour == 14 && min == 0 || hour >= 19 && hour < 21 || hour == 21 && min == 0) {
+      restaurant = restaurantRepositoryService
+      .findAllRestaurantsCloseBy(getRestaurantsRequest.getLatitude(),
+      getRestaurantsRequest.getLongitude(),currentTime,peakHoursServingRadiusInKms);
+    } else {
+      restaurant = restaurantRepositoryService
+      .findAllRestaurantsCloseBy(getRestaurantsRequest.getLatitude(),
+      getRestaurantsRequest.getLongitude(),currentTime,normalHoursServingRadiusInKms);
+    }
    
     //Extra to trim the restaurant
-   // restaurant = restaurant.subList(0, 50);
+    // restaurant = restaurant.subList(0, 50);
 
     GetRestaurantsResponse restaurantsResponse = new GetRestaurantsResponse(restaurant);
      
