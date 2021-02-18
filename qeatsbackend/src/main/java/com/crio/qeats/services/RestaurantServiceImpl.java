@@ -54,7 +54,7 @@ public class RestaurantServiceImpl implements RestaurantService {
      }
    
     //Extra to trim the restaurant
-    restaurant = restaurant.subList(0, 50);
+   // restaurant = restaurant.subList(0, 50);
 
     GetRestaurantsResponse restaurantsResponse = new GetRestaurantsResponse(restaurant);
      
