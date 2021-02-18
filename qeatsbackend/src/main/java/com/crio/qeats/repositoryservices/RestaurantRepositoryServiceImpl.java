@@ -75,23 +75,25 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
 
     for (RestaurantEntity re : restaurantEntity) {
       if (isRestaurantCloseByAndOpen(re, currentTime, latitude, longitude, servingRadiusInKms)) {
+
         Restaurant res = modelMapperProvider.get().map(re, Restaurant.class);
+        System.out.println(res.getName());
         String name = null;
         try {
           name = new String(res.getName().getBytes("ISO-8859-1"), "utf-8");
         } catch (UnsupportedEncodingException e) {
-          // TODO Auto-generated catch block
           name = "dummy";
         }
 
         StringBuilder sb = new StringBuilder();
-        System.out.println("Before" + name);
+       
         for (char ch : name.toCharArray()) {
           if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == ' ') {
             sb.append(ch);
           }
         }
-        System.out.println("After" + sb.toString());
+       
+        
         res.setCity(res.getName());
         res.setName(sb.toString());
         

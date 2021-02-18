@@ -74,13 +74,8 @@ public class RestaurantController {
         
       // we have to add somehere to fix it
       log.info("getRestaurants returned {}", getRestaurantsResponse);
-        
-      if (getRestaurantsResponse == null || getRestaurantsResponse.getRestaurants().size() == 0) {
-        Restaurant r = new Restaurant("122","null","null","null",3.4,3.4,
-            "null","null",new ArrayList<>());
-        getRestaurantsResponse.setRestaurants(Arrays.asList(r));
-      }
-      System.out.println(getRestaurantsResponse);
+    
+      System.out.println("RES" + getRestaurantsResponse);
       return ResponseEntity.ok().body(getRestaurantsResponse);
     } else {
       return ResponseEntity.badRequest().body(null);
