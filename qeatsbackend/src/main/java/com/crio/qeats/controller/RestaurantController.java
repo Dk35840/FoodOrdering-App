@@ -65,8 +65,10 @@ public class RestaurantController {
 
       getRestaurantsResponse = restaurantService
       .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
-
+        
+      // we have to add somehere to fix it
       log.info("getRestaurants returned {}", getRestaurantsResponse);
+
       return ResponseEntity.ok().body(getRestaurantsResponse);
     } else {
       return ResponseEntity.badRequest().body(null);
