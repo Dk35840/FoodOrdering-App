@@ -11,12 +11,13 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.crio.qeats.dto.Restaurant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -42,13 +43,13 @@ public class GetRestaurantsRequest {
   private Double longitude;
 
 
-    List<Restaurant> getRestaurants(){
+  List<Restaurant> getRestaurants() {
         
-        List<Restaurant> resturants = new ArrayList<>();
+    List<Restaurant> resturants = new ArrayList<>();
 
-        return resturants;
+    return resturants;
 
-    }
+  }
 
     
 }
