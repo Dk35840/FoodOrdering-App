@@ -83,6 +83,7 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
             sb.append(ch);
           }
         }
+        System.out.println("After" + sb.toString());
         res.setName(sb.toString());
 
         restaurants.add(res);
