@@ -39,7 +39,7 @@ public class RestaurantServiceImpl implements RestaurantService {
       GetRestaurantsRequest getRestaurantsRequest, LocalTime currentTime) {
 
     //For peak hours: 8AM - 10AM, 1PM-2PM, 7PM-9PM     
-   
+
     int hour = currentTime.getHour();
     int min = currentTime.getMinute();
 
@@ -58,6 +58,9 @@ public class RestaurantServiceImpl implements RestaurantService {
    
     //Extra to trim the restaurant
     // restaurant = restaurant.subList(0, 50);
+    if (restaurant == null) {
+      restaurant = new ArrayList<>();
+    }
 
     GetRestaurantsResponse restaurantsResponse = new GetRestaurantsResponse(restaurant);
      
