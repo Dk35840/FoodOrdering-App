@@ -78,6 +78,8 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
 
         Restaurant res = modelMapperProvider.get().map(re, Restaurant.class);
         System.out.println(res.getName());
+
+        /*
         String name = null;
         try {
           name = new String(res.getName().getBytes("ISO-8859-1"), "utf-8");
@@ -92,11 +94,9 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
             sb.append(ch);
           }
         }
-       
         
-        res.setCity(res.getName());
         res.setName(sb.toString());
-        
+        */
 
         restaurants.add(res);
       }

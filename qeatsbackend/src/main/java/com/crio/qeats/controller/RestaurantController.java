@@ -75,7 +75,7 @@ public class RestaurantController {
       // we have to add somehere to fix it
       log.info("getRestaurants returned {}", getRestaurantsResponse);
     
-      System.out.println("RES" + getRestaurantsResponse);
+      System.out.println(getRestaurantsResponse);
       return ResponseEntity.ok().body(getRestaurantsResponse);
     } else {
       return ResponseEntity.badRequest().body(null);
