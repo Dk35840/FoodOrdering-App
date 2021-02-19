@@ -13,7 +13,8 @@ import com.crio.qeats.services.RestaurantService;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -72,10 +73,16 @@ public class RestaurantController {
       getRestaurantsResponse = restaurantService
       .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
         
-      // we have to add somehere to fix it
+      List<Restaurant> res = getRestaurantsResponse.getRestaurants();
+      for (Restaurant r:res) {
+        r.setName(r.getName().replaceAll("[^a-zA-Z0-9]", ""));
+      }    
+
+      getRestaurantsResponse = new GetRestaurantsResponse(res);
       log.info("getRestaurants returned {}", getRestaurantsResponse);
     
       System.out.println(getRestaurantsResponse);
+      
       return ResponseEntity.ok().body(getRestaurantsResponse);
     } else {
       return ResponseEntity.badRequest().body(null);
