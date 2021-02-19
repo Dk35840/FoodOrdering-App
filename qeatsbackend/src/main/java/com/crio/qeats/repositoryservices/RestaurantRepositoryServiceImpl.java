@@ -87,14 +87,6 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
     return restaurants;
   }
 
-
-
-
-
-
-
-
-
   /**
    * Utility method to check if a restaurant is within the serving radius at a given time.
    * @return boolean True if restaurant falls within serving radius and is open, false otherwise
@@ -109,8 +101,5 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
 
     return false;
   }
-
-
-
 }
 
