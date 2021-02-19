@@ -82,13 +82,6 @@ public class RestaurantController {
     }
   }
 
-  /*  @GetMapping(RESTAURANT_API_ENDPOINT + MENU_API)
-  public Menu getMenu(@RequestParam(value = "restaurantId") String restaurantId) {
-
-    Menu menu = new Menu();
-    return menu;
-  }
- */
   // TIP(MODULE_MENUAPI): Model Implementation for getting menu given a restaurantId.
   // Get the Menu for the given restaurantId
   // API URI: /qeats/v1/menu?restaurantId=11
