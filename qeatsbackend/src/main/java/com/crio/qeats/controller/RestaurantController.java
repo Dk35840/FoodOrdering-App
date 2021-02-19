@@ -75,7 +75,7 @@ public class RestaurantController {
         
       List<Restaurant> res = getRestaurantsResponse.getRestaurants();
       for (Restaurant r:res) {
-        r.setName(r.getName().replaceAll("[^a-zA-Z0-9]", ""));
+        r.setName(r.getName().replaceAll("[^a-zA-Z0-9 ]", ""));
       }    
 
       getRestaurantsResponse = new GetRestaurantsResponse(res);
