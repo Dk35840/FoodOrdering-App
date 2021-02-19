@@ -82,7 +82,6 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
       }
     }
     
-
     System.out.println("RestaurantRepositoryServiceImpl" + restaurants);
 
     return restaurants;
