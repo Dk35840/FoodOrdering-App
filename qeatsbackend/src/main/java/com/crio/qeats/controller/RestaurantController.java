@@ -71,17 +71,18 @@ public class RestaurantController {
         && getRestaurantsRequest.getLongitude() <= 180) {
 
       getRestaurantsResponse = restaurantService
-      .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
+      .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.of(18, 1));
         
       List<Restaurant> res = getRestaurantsResponse.getRestaurants();
       for (Restaurant r:res) {
         r.setName(r.getName().replaceAll("[^a-zA-Z0-9 ]", ""));
       }    
+      System.out.println(getRestaurantsResponse);
 
       getRestaurantsResponse = new GetRestaurantsResponse(res);
       log.info("getRestaurants returned {}", getRestaurantsResponse);
     
-      System.out.println(getRestaurantsResponse);
+      
       
       return ResponseEntity.ok().body(getRestaurantsResponse);
     } else {

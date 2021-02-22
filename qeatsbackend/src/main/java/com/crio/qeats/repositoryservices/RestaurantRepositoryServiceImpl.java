@@ -7,6 +7,8 @@
 package com.crio.qeats.repositoryservices;
 
 import ch.hsr.geohash.GeoHash;
+
+import com.crio.qeats.configs.RedisConfiguration;
 import com.crio.qeats.dto.Restaurant;
 import com.crio.qeats.globals.GlobalConstants;
 import com.crio.qeats.models.RestaurantEntity;
@@ -35,18 +37,24 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import redis.clients.jedis.Jedis;
 
 @Primary
 @Service
 public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryService {
 
   @Autowired
-  private MongoTemplate mongoTemplate;
+  RestaurantRepository restaurantRepository;
 
   @Autowired
-  private RestaurantRepository restaurantRepository;
+  private RedisConfiguration redisConfiguration;
+
+  @Autowired
+  private MongoTemplate mongoTemplate;
+
   @Autowired
   private Provider<ModelMapper> modelMapperProvider;
 
@@ -63,8 +71,10 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
   // 2. Remember to keep the precision of GeoHash in mind while using it as a key.
   // Check RestaurantRepositoryService.java file for the interface contract.
 
-  public List<Restaurant> findAllRestaurantsCloseBy(Double latitude, Double longitude,
-      LocalTime currentTime, Double servingRadiusInKms) {
+  public List<Restaurant> findAllRestaurantsCloseBy(Double latitude, Double longitude, LocalTime currentTime,
+      Double servingRadiusInKms) {
+
+    
 
     List<RestaurantEntity> restaurantEntity = restaurantRepository.findAll();
 
@@ -87,6 +97,14 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
     return restaurants;
   }
 
+
+
+
+
+
+
+
+
   /**
    * Utility method to check if a restaurant is within the serving radius at a given time.
    * @return boolean True if restaurant falls within serving radius and is open, false otherwise
@@ -101,5 +119,8 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
 
     return false;
   }
+
+
+
 }
 

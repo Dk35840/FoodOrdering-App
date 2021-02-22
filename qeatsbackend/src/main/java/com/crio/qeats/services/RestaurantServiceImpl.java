@@ -64,7 +64,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     GetRestaurantsResponse restaurantsResponse = new GetRestaurantsResponse(restaurant);
      
-    //System.out.println("Res Called" + restaurantsResponse);
+    // System.out.println("Res Called" + restaurantsResponse);
 
     return restaurantsResponse;
   }
