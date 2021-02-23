@@ -4,6 +4,10 @@ package com.crio.qeats.configs;
 import java.time.Duration;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -32,6 +36,10 @@ public class RedisConfiguration {
   private int redisPort;
   private JedisPool jedisPool;
 
+  public void buildpoolconfig() {
+    System.out.println("Jedis Pool is initialised");
+    jedisPool = new JedisPool(redisHost, redisPort);
+  }
 
   @Value("${spring.redis.port}")
   public void setRedisPort(int port) {
@@ -45,6 +53,8 @@ public class RedisConfiguration {
    */
   @PostConstruct
   public void initCache() {
+
+    buildpoolconfig();
   }
 
 
@@ -55,7 +65,7 @@ public class RedisConfiguration {
    */
   public boolean isCacheAvailable() {
 
-     return false;
+    return jedisPool != null;
   }
 
   /**
@@ -63,17 +73,12 @@ public class RedisConfiguration {
    * TIP: This is useful if cache is stale or while performing tests.
    */
   public void destroyCache() {
+    jedisPool.destroy();
   }
 
-public RedisConfiguration getJedisPool() {
-
-  return null;
-}
-
-public Jedis getResource() {
-
-  return null;
-}
+  public JedisPool getJedisPool() { 
+    return jedisPool;
+  }
 
 }
 

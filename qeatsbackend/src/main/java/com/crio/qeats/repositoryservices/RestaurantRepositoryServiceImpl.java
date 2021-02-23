@@ -15,8 +15,10 @@ import com.crio.qeats.models.RestaurantEntity;
 import com.crio.qeats.repositories.RestaurantRepository;
 import com.crio.qeats.utils.GeoLocation;
 import com.crio.qeats.utils.GeoUtils;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -52,6 +54,11 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
   @Autowired
   private RedisConfiguration redisConfiguration;
 
+  private ObjectMapper objectMapper = new ObjectMapper();
+
+  //@Autowired
+ 
+  
   @Autowired
   private MongoTemplate mongoTemplate;
 
@@ -74,8 +81,31 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
   public List<Restaurant> findAllRestaurantsCloseBy(Double latitude, Double longitude, LocalTime currentTime,
       Double servingRadiusInKms) {
 
-    
+    if (!redisConfiguration.isCacheAvailable()) {
+      redisConfiguration.initCache();
+    } 
 
+    Jedis jedis = redisConfiguration.getJedisPool().getResource();
+
+    GeoHash geoHash = GeoHash.withCharacterPrecision(20.0, 30.0, 7);
+    String key = geoHash.toBase32();
+
+      
+
+    if (jedis.get(key) != null) {
+
+      try {
+        
+        return objectMapper.readValue(jedis.get(key), new TypeReference<List<Restaurant>>() {
+
+        });
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+     
+
+    }
     List<RestaurantEntity> restaurantEntity = restaurantRepository.findAll();
 
     // List<RestaurantEntity> restaurantEntity =
@@ -84,7 +114,9 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
     List<Restaurant> restaurants = new ArrayList<>();
 
     for (RestaurantEntity re : restaurantEntity) {
+
       if (isRestaurantCloseByAndOpen(re, currentTime, latitude, longitude, servingRadiusInKms)) {
+
 
         Restaurant res = modelMapperProvider.get().map(re, Restaurant.class);
        
@@ -94,6 +126,13 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
     
     System.out.println("RestaurantRepositoryServiceImpl" + restaurants);
 
+    try{
+      String jsonString= objectMapper.writeValueAsString(restaurants);
+      jedis.set(key,jsonString);
+    } catch(IOException e){
+      e.printStackTrace();
+    }
+    
     return restaurants;
   }
 
