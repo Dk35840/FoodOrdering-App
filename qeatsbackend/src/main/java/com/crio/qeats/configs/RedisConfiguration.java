@@ -73,7 +73,13 @@ public class RedisConfiguration {
    * TIP: This is useful if cache is stale or while performing tests.
    */
   public void destroyCache() {
-    jedisPool.getResource().flushDB();
+    
+    if (jedisPool != null) {
+      jedisPool.getResource().flushAll();
+      jedisPool.destroy();
+      jedisPool = null;
+    }
+
   }
 
   public JedisPool getJedisPool() { 
