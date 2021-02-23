@@ -117,7 +117,6 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
 
       if (isRestaurantCloseByAndOpen(re, currentTime, latitude, longitude, servingRadiusInKms)) {
 
-
         Restaurant res = modelMapperProvider.get().map(re, Restaurant.class);
        
         restaurants.add(res);
