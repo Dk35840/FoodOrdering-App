@@ -57,7 +57,7 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
   private ObjectMapper objectMapper = new ObjectMapper();
 
   //@Autowired
- 
+  
   
   @Autowired
   private MongoTemplate mongoTemplate;
@@ -80,12 +80,13 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
 
   public List<Restaurant> findAllRestaurantsCloseBy(Double latitude, Double longitude, LocalTime currentTime,
       Double servingRadiusInKms) {
+    Jedis jedis = redisConfiguration.getJedisPool().getResource();
 
     if (!redisConfiguration.isCacheAvailable()) {
       redisConfiguration.initCache();
     } 
 
-    Jedis jedis = redisConfiguration.getJedisPool().getResource();
+    
 
     GeoHash geoHash = GeoHash.withCharacterPrecision(20.0, 30.0, 7);
     String key = geoHash.toBase32();
