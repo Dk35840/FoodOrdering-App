@@ -126,7 +126,8 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
     
     System.out.println("RestaurantRepositoryServiceImpl" + restaurants);
 
-    try{
+    try {
+
       String jsonString= objectMapper.writeValueAsString(restaurants);
       jedis.set(key,jsonString);
     } catch(IOException e){
