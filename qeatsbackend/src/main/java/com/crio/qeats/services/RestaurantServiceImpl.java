@@ -67,6 +67,24 @@ public class RestaurantServiceImpl implements RestaurantService {
     // System.out.println("Res Called" + restaurantsResponse);
 
     return restaurantsResponse;
+
+  }
+
+
+  // TODO: CRIO_TASK_MODULE_RESTAURANTSEARCH
+  // Implement findRestaurantsBySearchQuery. The request object has the search string.
+  // We have to combine results from multiple sources:
+  // 1. Restaurants by name (exact and inexact)
+  // 2. Restaurants by cuisines (also called attributes)
+  // 3. Restaurants by food items it serves
+  // 4. Restaurants by food item attributes (spicy, sweet, etc)
+  // Remember, a restaurant must be present only once in the resulting list.
+  // Check RestaurantService.java file for the interface contract.
+  @Override
+  public GetRestaurantsResponse findRestaurantsBySearchQuery(
+      GetRestaurantsRequest getRestaurantsRequest, LocalTime currentTime) {
+
+     return null;
   }
 
 }

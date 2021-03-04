@@ -160,6 +160,39 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
     return false;
   }
 
+  @Override
+  public List<Restaurant> findRestaurantsByName(Double latitude, Double longitude, String searchString,
+      LocalTime currentTime, Double servingRadiusInKms) {
+    
+        List<RestaurantEntity> restaurantEntity = restaurantRepository.findByName(searchString);
+
+
+    return null;
+  }
+
+  @Override
+  public List<Restaurant> findRestaurantsByAttributes(Double latitude, Double longitude, String searchString,
+      LocalTime currentTime, Double servingRadiusInKms) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public List<Restaurant> findRestaurantsByItemName(Double latitude, Double longitude, String searchString,
+      LocalTime currentTime, Double servingRadiusInKms) {
+
+        List<RestaurantEntity> restaurantEntity = restaurantRepository.findRestaurantsByItemName();
+
+        return null;
+  }
+
+  @Override
+  public List<Restaurant> findRestaurantsByItemAttributes(Double latitude, Double longitude, String searchString,
+      LocalTime currentTime, Double servingRadiusInKms) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 
 
 }

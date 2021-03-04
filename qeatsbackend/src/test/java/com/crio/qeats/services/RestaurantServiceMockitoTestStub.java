@@ -5,12 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
+
 import static org.mockito.Mockito.mock;
+
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+
 import com.crio.qeats.QEatsApplication;
+
 import com.crio.qeats.dto.Restaurant;
 import com.crio.qeats.exchanges.GetRestaurantsRequest;
 import com.crio.qeats.exchanges.GetRestaurantsResponse;
@@ -27,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -36,6 +41,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+
 
 @ExtendWith(MockitoExtension.class)
 public class RestaurantServiceMockitoTestStub {
@@ -50,6 +56,7 @@ public class RestaurantServiceMockitoTestStub {
   protected Restaurant restaurant4;
   protected Restaurant restaurant5;
 
+
   @InjectMocks
   protected RestaurantServiceImpl restaurantService;
   @Mock
@@ -57,31 +64,33 @@ public class RestaurantServiceMockitoTestStub {
 
  
   @BeforeEach
+
   public void initializeRestaurantObjects() throws IOException {
     String fixture =
         FixtureHelpers.fixture(FIXTURES + "/mocking_list_of_restaurants.json");
     Restaurant[] restaurants = objectMapper.readValue(fixture, Restaurant[].class);
+
 
     restaurant1 = restaurants[0];
     restaurant2 = restaurants[1];
     restaurant3 = restaurants[2];
     restaurant4 = restaurants[3];
     restaurant5 = restaurants[4];
-   
+
   }
 
 
 
   @Test
   public void  testFindNearbyWithin5km() throws IOException {
+
     
     when(restaurantRepositoryServiceMock
             .findAllRestaurantsCloseBy(any(Double.class), any(Double.class),
                 eq(LocalTime.of(3, 0)),
                 eq(5.0)))
             .thenReturn(Arrays.asList(restaurant1, restaurant2));
-            
-        
+
     GetRestaurantsResponse allRestaurantsCloseBy = restaurantService
         .findAllRestaurantsCloseBy(new GetRestaurantsRequest(20.0, 30.0),
             LocalTime.of(3, 0));
@@ -101,12 +110,10 @@ public class RestaurantServiceMockitoTestStub {
   @Test
   public void  testFindNearbyWithin3km() throws IOException {
 
+
     List<Restaurant> restaurantList1 = Arrays.asList(restaurant1,restaurant4);
     List<Restaurant> restaurantList2 = Arrays.asList(restaurant2,restaurant4);
 
-    // TODO: CRIO_TASK_MODULE_MOCKITO
-    //  Initialize these two lists above such that I will match with the assert statements
-    //  defined below.
 
     lenient().doReturn(restaurantList1)
         .when(restaurantRepositoryServiceMock)
@@ -121,6 +128,7 @@ public class RestaurantServiceMockitoTestStub {
     GetRestaurantsResponse allRestaurantsCloseByOffPeakHours = restaurantService
                 .findAllRestaurantsCloseBy(new GetRestaurantsRequest(20.0,30.2),
               LocalTime.of(3, 0));
+
 
     assertEquals(2, allRestaurantsCloseByOffPeakHours.getRestaurants().size());
     assertEquals("11", allRestaurantsCloseByOffPeakHours.getRestaurants().get(0).getRestaurantId());
