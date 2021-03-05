@@ -14,5 +14,12 @@ import org.springframework.data.mongodb.repository.Query;
 
 public interface RestaurantRepository extends MongoRepository<RestaurantEntity, String> {
 
+  @Query("{name: ?0}")
+  Optional<List<RestaurantEntity>> findRestaurantsByNameExact(String searhString);
+
+  Optional<RestaurantEntity> findById(String id);
+
+  List<RestaurantEntity> findByAttributes(String attr);
+
 }
 

@@ -18,4 +18,6 @@ public interface MenuRepository extends MongoRepository<MenuEntity, String> {
 
   Optional<List<MenuEntity>> findMenusByItemsItemIdIn(List<String> itemIdList);
 
+  List<MenuEntity> findByItems(String attr);
+
 }

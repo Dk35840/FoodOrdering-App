@@ -9,5 +9,7 @@ import org.springframework.data.mongodb.repository.Query;
 
 public interface ItemRepository extends MongoRepository<ItemEntity, String> {
 
+  List<ItemEntity> findByAttributes(String attr);
+
 }
 

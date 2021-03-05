@@ -57,5 +57,7 @@ public class Restaurant {
   String opensAt;
   String closesAt;
   List<String> attributes;
+
+  
 }
 

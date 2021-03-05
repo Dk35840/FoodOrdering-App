@@ -42,6 +42,13 @@ public class GetRestaurantsRequest {
   @Max(180)
   private Double longitude;
 
+  private String searchFor;
+
+  public GetRestaurantsRequest(Double lat, Double lon) {
+    this.latitude = lat;
+    this.longitude = lon;
+
+  }
 
   List<Restaurant> getRestaurants() {
         
@@ -50,6 +57,17 @@ public class GetRestaurantsRequest {
     return resturants;
 
   }
+
+
+  public void setSearchFor(String searchString) {
+    this.searchFor = searchString;
+  }
+
+
+  public String getSearchFor() {
+    return searchFor;
+  }
+
 
     
 }

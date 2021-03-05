@@ -30,6 +30,7 @@ public class MenuEntity {
   private String restaurantId;
 
   @NotNull
-  private List<Item> items = new ArrayList();
+  private List<Item> items;
+  
 
 }

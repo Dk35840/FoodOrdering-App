@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import lombok.extern.log4j.Log4j2;
@@ -80,11 +81,57 @@ public class RestaurantServiceImpl implements RestaurantService {
   // 4. Restaurants by food item attributes (spicy, sweet, etc)
   // Remember, a restaurant must be present only once in the resulting list.
   // Check RestaurantService.java file for the interface contract.
+
   @Override
   public GetRestaurantsResponse findRestaurantsBySearchQuery(
       GetRestaurantsRequest getRestaurantsRequest, LocalTime currentTime) {
+    
+    Double lat = getRestaurantsRequest.getLatitude();
+    Double lon = getRestaurantsRequest.getLongitude();
+    String str = getRestaurantsRequest.getSearchFor();
+    
+    int hour = currentTime.getHour();
+    int min = currentTime.getMinute();
 
-     return null;
+    List<Restaurant> restaurant = new ArrayList<>();;
+    TreeSet<Restaurant> set = new TreeSet<>((a,b) -> a.getName().compareTo(b.getName()));
+        
+    if (hour >= 8 && hour < 10 || hour == 10 && min == 0 || hour >= 13 && hour < 14
+        || hour == 14 && min == 0 || hour >= 19 && hour < 21 || hour == 21 && min == 0) {
+
+      set.addAll(restaurantRepositoryService
+          .findRestaurantsByAttributes(lat, lon, str, currentTime, peakHoursServingRadiusInKms));
+
+      set.addAll(restaurantRepositoryService
+          .findRestaurantsByItemAttributes(lat, lon, str, currentTime,peakHoursServingRadiusInKms));
+      set.addAll(restaurantRepositoryService
+          .findRestaurantsByItemName(lat, lon, str, currentTime,peakHoursServingRadiusInKms));
+      set.addAll(restaurantRepositoryService
+          .findRestaurantsByName(lat, lon, str, currentTime,peakHoursServingRadiusInKms));
+
+    } else {
+      restaurant = restaurantRepositoryService
+      .findAllRestaurantsCloseBy(getRestaurantsRequest.getLatitude(),
+      getRestaurantsRequest.getLongitude(),currentTime,normalHoursServingRadiusInKms);
+
+      set.addAll(restaurantRepositoryService
+          .findRestaurantsByAttributes(lat, lon, str, currentTime, normalHoursServingRadiusInKms));
+      set.addAll(restaurantRepositoryService
+          .findRestaurantsByItemAttributes(lat, lon,str,currentTime,normalHoursServingRadiusInKms));
+      set.addAll(restaurantRepositoryService
+          .findRestaurantsByItemName(lat, lon, str, currentTime,normalHoursServingRadiusInKms));
+      set.addAll(restaurantRepositoryService
+          .findRestaurantsByName(lat, lon, str, currentTime,normalHoursServingRadiusInKms));
+
+    }
+
+    restaurant.addAll(set);    
+
+    System.out.println(restaurant);
+
+    GetRestaurantsResponse restaurantsResponse = new GetRestaurantsResponse(restaurant);  
+
+    return restaurantsResponse;
   }
 
 }

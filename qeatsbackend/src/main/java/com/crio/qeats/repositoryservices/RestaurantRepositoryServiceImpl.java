@@ -11,7 +11,11 @@ import ch.hsr.geohash.GeoHash;
 import com.crio.qeats.configs.RedisConfiguration;
 import com.crio.qeats.dto.Restaurant;
 import com.crio.qeats.globals.GlobalConstants;
+import com.crio.qeats.models.ItemEntity;
+import com.crio.qeats.models.MenuEntity;
 import com.crio.qeats.models.RestaurantEntity;
+import com.crio.qeats.repositories.ItemRepository;
+import com.crio.qeats.repositories.MenuRepository;
 import com.crio.qeats.repositories.RestaurantRepository;
 import com.crio.qeats.utils.GeoLocation;
 import com.crio.qeats.utils.GeoUtils;
@@ -52,6 +56,11 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
   RestaurantRepository restaurantRepository;
 
   @Autowired
+  MenuRepository menuRepository;
+
+  @Autowired
+  ItemRepository itemRepository;
+  @Autowired
   private RedisConfiguration redisConfiguration;
 
   private ObjectMapper objectMapper = new ObjectMapper();
@@ -78,72 +87,101 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
   // 2. Remember to keep the precision of GeoHash in mind while using it as a key.
   // Check RestaurantRepositoryService.java file for the interface contract.
 
-  public List<Restaurant> findAllRestaurantsCloseBy(Double latitude, Double longitude, LocalTime currentTime,
-      Double servingRadiusInKms) {
+  public List<Restaurant> findAllRestaurantsCloseBy(Double latitude, Double longitude,
+       LocalTime currentTime, Double servingRadiusInKms) {
+
+   
+
+    List<Restaurant> restaurants = null;
+
+    if (redisConfiguration.isCacheAvailable()) {
+      restaurants = findAllRestaurantsCloseByFromCache(latitude, longitude,
+       currentTime, servingRadiusInKms);
+    } else {
+      restaurants =  findAllRestaurantsCloseFromDb(latitude, longitude,
+       currentTime, servingRadiusInKms);
+    }
+
+    return restaurants;
+
+  
+  }
+
+  private List<Restaurant> findAllRestaurantsCloseByFromCache(Double latitude, Double longitude,
+      LocalTime currentTime, Double servingRadiusInKms) {
+
+    GeoLocation geoLocation = new GeoLocation(latitude,longitude);
+
+    GeoHash geoHash = GeoHash.withCharacterPrecision(geoLocation.getLatitude(),
+            geoLocation.getLongitude(), 7);
+    String key = geoHash.toBase32();
+    
+    List<Restaurant> restaurants = new ArrayList<>();
+
     Jedis jedis = redisConfiguration.getJedisPool().getResource();
 
-    if (!redisConfiguration.isCacheAvailable()) {
-      redisConfiguration.initCache();
-    } 
-
-    
-
-    GeoHash geoHash = GeoHash.withCharacterPrecision(20.0, 30.0, 7);
-    String key = geoHash.toBase32();
-
-      
-
     if (jedis.get(key) != null) {
-
+    
       try {
-        
-        return objectMapper.readValue(jedis.get(key), new TypeReference<List<Restaurant>>() {
-
-        });
+            
+        restaurants = objectMapper.readValue(jedis.get(key), new TypeReference<List<Restaurant>>() {
+    
+            });
       } catch (IOException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
-     
+         
+    
+    } else {
+      restaurants = findAllRestaurantsCloseFromDb(geoLocation.getLatitude(),
+       geoLocation.getLongitude(), currentTime, servingRadiusInKms);
 
-    }
+      try {
+
+        String jsonString = new ObjectMapper().writeValueAsString(restaurants);
+        jedis.setex(geoHash.toBase32(),
+            GlobalConstants.REDIS_ENTRY_EXPIRY_IN_SECONDS, jsonString);
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+    }      
+
+    return restaurants;
+  }
+  
+  private List<Restaurant> findAllRestaurantsCloseFromDb(Double latitude, Double longitude,
+       LocalTime currentTime, Double servingRadiusInKms) {
+
     List<RestaurantEntity> restaurantEntity = restaurantRepository.findAll();
 
     // List<RestaurantEntity> restaurantEntity =
     // mongoTemplate.findAll(RestaurantEntity.class);
-
+  
     List<Restaurant> restaurants = new ArrayList<>();
-
+    
     for (RestaurantEntity re : restaurantEntity) {
-
+    
       if (isRestaurantCloseByAndOpen(re, currentTime, latitude, longitude, servingRadiusInKms)) {
-
+    
         Restaurant res = modelMapperProvider.get().map(re, Restaurant.class);
-       
+           
         restaurants.add(res);
       }
     }
-    
+        
     System.out.println("RestaurantRepositoryServiceImpl" + restaurants);
-
+    
     try {
-
-      String jsonString= objectMapper.writeValueAsString(restaurants);
-      jedis.set(key,jsonString);
-    } catch(IOException e){
+      String jsonString = objectMapper.writeValueAsString(restaurants);
+      
+    } catch (IOException e) {
       e.printStackTrace();
     }
-    
-    return restaurants;
+        
+    return restaurants;      
   }
-
-
-
-
-
-
-
-
 
   /**
    * Utility method to check if a restaurant is within the serving radius at a given time.
@@ -161,36 +199,99 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
   }
 
   @Override
-  public List<Restaurant> findRestaurantsByName(Double latitude, Double longitude, String searchString,
-      LocalTime currentTime, Double servingRadiusInKms) {
+  public List<Restaurant> findRestaurantsByName(Double latitude, Double longitude,
+       String searchString,LocalTime currentTime, Double servingRadiusInKms) {
     
-        List<RestaurantEntity> restaurantEntity = restaurantRepository.findByName(searchString);
+    List<RestaurantEntity> restaurantEntity = restaurantRepository
+        .findRestaurantsByNameExact(searchString).get();
 
+    List<Restaurant> restaurants = new ArrayList<>();
 
-    return null;
+    for (RestaurantEntity re : restaurantEntity) {
+
+      if (isRestaurantCloseByAndOpen(re, currentTime, latitude, longitude, servingRadiusInKms)) {
+
+        Restaurant res = modelMapperProvider.get().map(re, Restaurant.class);
+       
+        restaurants.add(res);
+      }
+    }
+    
+ 
+    return restaurants;
   }
 
   @Override
-  public List<Restaurant> findRestaurantsByAttributes(Double latitude, Double longitude, String searchString,
-      LocalTime currentTime, Double servingRadiusInKms) {
-    // TODO Auto-generated method stub
-    return null;
+  public List<Restaurant> findRestaurantsByAttributes(Double latitude, Double longitude,
+      String searchString,LocalTime currentTime, Double servingRadiusInKms) {
+
+    List<RestaurantEntity> restaurantEntity = restaurantRepository.findByAttributes(searchString);
+    List<Restaurant> restaurants = new ArrayList<>();
+
+    for (RestaurantEntity re : restaurantEntity) {
+
+      if (isRestaurantCloseByAndOpen(re, currentTime, latitude, longitude, servingRadiusInKms)) {
+
+        Restaurant res = modelMapperProvider.get().map(re, Restaurant.class);
+       
+        restaurants.add(res);
+      }
+    }    
+    return restaurants;
   }
 
   @Override
-  public List<Restaurant> findRestaurantsByItemName(Double latitude, Double longitude, String searchString,
-      LocalTime currentTime, Double servingRadiusInKms) {
+  public List<Restaurant> findRestaurantsByItemName(Double latitude, Double longitude,
+      String searchString,LocalTime currentTime, Double servingRadiusInKms) {
 
-        List<RestaurantEntity> restaurantEntity = restaurantRepository.findRestaurantsByItemName();
+    List<MenuEntity> menu = menuRepository.findByItems(searchString); 
 
-        return null;
+    List<Restaurant> restaurants = new ArrayList<>();
+
+    for (MenuEntity me : menu) {
+
+      String id = me.getRestaurantId();
+      RestaurantEntity re = restaurantRepository.findById(id).get();
+
+      if (isRestaurantCloseByAndOpen(re, currentTime, latitude, longitude, servingRadiusInKms)) {
+
+        Restaurant res = modelMapperProvider.get().map(re, Restaurant.class);
+       
+        restaurants.add(res);
+      }
+    }
+    return restaurants;
   }
 
   @Override
-  public List<Restaurant> findRestaurantsByItemAttributes(Double latitude, Double longitude, String searchString,
-      LocalTime currentTime, Double servingRadiusInKms) {
-    // TODO Auto-generated method stub
-    return null;
+  public List<Restaurant> findRestaurantsByItemAttributes(Double latitude, Double longitude,
+      String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+
+    List<ItemEntity> itemEntity = itemRepository.findByAttributes(searchString);
+   
+
+    List<Restaurant> restaurants = new ArrayList<>();
+    List<String> itemId = new ArrayList<>();
+
+    for (ItemEntity re : itemEntity) {
+      itemId.add(re.getId());
+    }
+
+    List<MenuEntity> menuEntity = menuRepository.findMenusByItemsItemIdIn(itemId).get();
+
+    for (MenuEntity me : menuEntity) {
+
+      String id = me.getRestaurantId();
+      RestaurantEntity re = restaurantRepository.findById(id).get();
+
+      if (isRestaurantCloseByAndOpen(re, currentTime, latitude, longitude, servingRadiusInKms)) {
+
+        Restaurant res = modelMapperProvider.get().map(re, Restaurant.class);
+       
+        restaurants.add(res);
+      }
+    }
+    return restaurants;
   }
 
 
