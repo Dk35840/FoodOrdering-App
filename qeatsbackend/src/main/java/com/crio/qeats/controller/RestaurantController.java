@@ -60,7 +60,7 @@ public class RestaurantController {
       GetRestaurantsRequest getRestaurantsRequest) {
 
     log.info("getRestaurants called with {}", getRestaurantsRequest);
-    GetRestaurantsResponse getRestaurantsResponse;
+    
 
     log.info(getRestaurantsRequest.getLatitude());
      
@@ -70,15 +70,25 @@ public class RestaurantController {
         && getRestaurantsRequest.getLongitude() >= -180 
         && getRestaurantsRequest.getLongitude() <= 180) {
 
-      // Time modified    
-      getRestaurantsResponse = restaurantService
-      .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
-        
+      GetRestaurantsResponse  getRestaurantsResponse = null;
+
+      if (getRestaurantsRequest.getSearchFor() == null) {
+        getRestaurantsResponse = restaurantService
+        .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
+      } else {
+        getRestaurantsResponse = restaurantService
+          .findRestaurantsBySearchQuery(getRestaurantsRequest, LocalTime.now());
+      }
+     
+
+       
+      System.out.println("GetRestaurantsResponse : " + getRestaurantsResponse);
+
       List<Restaurant> res = getRestaurantsResponse.getRestaurants();
+      
       for (Restaurant r:res) {
         r.setName(r.getName().replaceAll("[^a-zA-Z0-9 ]", ""));
-      }    
-      System.out.println(getRestaurantsResponse);
+      }  
 
       getRestaurantsResponse = new GetRestaurantsResponse(res);
       log.info("getRestaurants returned {}", getRestaurantsResponse);
