@@ -149,6 +149,7 @@ class RestaurantServiceTest {
     when(restaurantRepositoryServiceMock.findRestaurantsByName(any(Double.class),
         any(Double.class), any(String.class), any(LocalTime.class), any(Double.class)))
         .thenReturn(loadRestaurantsDuringPeakHours());
+
     when(restaurantRepositoryServiceMock.findRestaurantsByAttributes(any(Double.class),
         any(Double.class), any(String.class), any(LocalTime.class), any(Double.class)))
         .thenReturn(loadRestaurantsSearchedByAttributes());
@@ -203,11 +204,17 @@ class RestaurantServiceTest {
 
   
   private List<Restaurant> loadRestaurantsDuringNormalHours() throws IOException {
+      
     String fixture =
         FixtureHelpers.fixture(FIXTURES + "/normal_hours_list_of_restaurants.json");
 
-    return objectMapper.readValue(fixture, new TypeReference<List<Restaurant>>() {
+   
+
+    List<Restaurant> res = objectMapper.readValue(fixture, new TypeReference<List<Restaurant>>() {
     });
+
+    System.out.println(res);   
+    return res;
   }
 
   private List<Restaurant> loadRestaurantsSearchedByAttributes() throws IOException {
@@ -222,7 +229,12 @@ class RestaurantServiceTest {
     String fixture =
         FixtureHelpers.fixture(FIXTURES + "/peak_hours_list_of_restaurants.json");
 
-    return objectMapper.readValue(fixture, new TypeReference<List<Restaurant>>() {
-    });
+   
+
+    List<Restaurant> res = objectMapper.readValue(fixture, new TypeReference<List<Restaurant>>() {
+        });
+
+    //System.out.println(res);    
+    return res;
   }
 }

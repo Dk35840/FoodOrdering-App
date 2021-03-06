@@ -95,19 +95,21 @@ public class RestaurantServiceImpl implements RestaurantService {
       return new GetRestaurantsResponse(restaurant);
     } 
 
-    TreeSet<Restaurant> set = new TreeSet<>((a,b) -> a.getName().compareTo(b.getName()));
+    TreeSet<Restaurant> set = new TreeSet<>((a,b) -> a.getRestaurantId()
+        .compareTo(b.getRestaurantId()));
         
     if (hour >= 8 && hour < 10 || hour == 10 && min == 0 || hour >= 13 && hour < 14
         || hour == 14 && min == 0 || hour >= 19 && hour < 21 || hour == 21 && min == 0) {
 
+      set.addAll(restaurantRepositoryService
+          .findRestaurantsByName(lat, lon, str, currentTime,peakHoursServingRadiusInKms));   
       set.addAll(restaurantRepositoryService
           .findRestaurantsByAttributes(lat, lon, str, currentTime, peakHoursServingRadiusInKms));
       set.addAll(restaurantRepositoryService
           .findRestaurantsByItemAttributes(lat, lon, str, currentTime,peakHoursServingRadiusInKms));
       set.addAll(restaurantRepositoryService
           .findRestaurantsByItemName(lat, lon, str, currentTime,peakHoursServingRadiusInKms));
-      set.addAll(restaurantRepositoryService
-          .findRestaurantsByName(lat, lon, str, currentTime,peakHoursServingRadiusInKms));
+      
 
     } else {
       
