@@ -70,8 +70,9 @@ public class RestaurantController {
         && getRestaurantsRequest.getLongitude() >= -180 
         && getRestaurantsRequest.getLongitude() <= 180) {
 
+      // Time modified    
       getRestaurantsResponse = restaurantService
-      .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.of(18, 1));
+      .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
         
       List<Restaurant> res = getRestaurantsResponse.getRestaurants();
       for (Restaurant r:res) {

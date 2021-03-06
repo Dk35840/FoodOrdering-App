@@ -251,6 +251,7 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
     for (MenuEntity me : menu) {
 
       String id = me.getRestaurantId();
+      System.out.println("findRestaurantbyItemName called" + id);
       RestaurantEntity re = restaurantRepository.findById(id).get();
 
       if (isRestaurantCloseByAndOpen(re, currentTime, latitude, longitude, servingRadiusInKms)) {
@@ -267,6 +268,8 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
   public List<Restaurant> findRestaurantsByItemAttributes(Double latitude, Double longitude,
       String searchString, LocalTime currentTime, Double servingRadiusInKms) {
 
+    System.out.println("findRestaurantsByItemAttributes called");    
+    
     List<ItemEntity> itemEntity = itemRepository.findByAttributes(searchString);
    
 
@@ -275,6 +278,7 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
 
     for (ItemEntity re : itemEntity) {
       itemId.add(re.getId());
+      System.out.println("findRestaurantsByItemAttributes called" + re);
     }
 
     List<MenuEntity> menuEntity = menuRepository.findMenusByItemsItemIdIn(itemId).get();

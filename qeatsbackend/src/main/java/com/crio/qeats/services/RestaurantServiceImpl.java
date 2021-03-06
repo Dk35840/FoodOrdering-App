@@ -90,10 +90,17 @@ public class RestaurantServiceImpl implements RestaurantService {
     Double lon = getRestaurantsRequest.getLongitude();
     String str = getRestaurantsRequest.getSearchFor();
     
+      
+
     int hour = currentTime.getHour();
     int min = currentTime.getMinute();
 
-    List<Restaurant> restaurant = new ArrayList<>();;
+    List<Restaurant> restaurant = new ArrayList<>();
+    
+    if (str.isEmpty()) {
+      return new GetRestaurantsResponse(restaurant);
+    } 
+
     TreeSet<Restaurant> set = new TreeSet<>((a,b) -> a.getName().compareTo(b.getName()));
         
     if (hour >= 8 && hour < 10 || hour == 10 && min == 0 || hour >= 13 && hour < 14
@@ -110,9 +117,7 @@ public class RestaurantServiceImpl implements RestaurantService {
           .findRestaurantsByName(lat, lon, str, currentTime,peakHoursServingRadiusInKms));
 
     } else {
-      restaurant = restaurantRepositoryService
-      .findAllRestaurantsCloseBy(getRestaurantsRequest.getLatitude(),
-      getRestaurantsRequest.getLongitude(),currentTime,normalHoursServingRadiusInKms);
+      
 
       set.addAll(restaurantRepositoryService
           .findRestaurantsByAttributes(lat, lon, str, currentTime, normalHoursServingRadiusInKms));
