@@ -44,7 +44,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     int hour = currentTime.getHour();
     int min = currentTime.getMinute();
 
-    List<Restaurant> restaurant;
+    List<Restaurant> restaurant =  new ArrayList<>();
 
     if (hour >= 8 && hour < 10 || hour == 10 && min == 0 || hour >= 13 && hour < 14
         || hour == 14 && min == 0 || hour >= 19 && hour < 21 || hour == 21 && min == 0) {
@@ -56,13 +56,7 @@ public class RestaurantServiceImpl implements RestaurantService {
       .findAllRestaurantsCloseBy(getRestaurantsRequest.getLatitude(),
       getRestaurantsRequest.getLongitude(),currentTime,normalHoursServingRadiusInKms);
     }
-   
-    //Extra to trim the restaurant
-    // restaurant = restaurant.subList(0, 50);
-    if (restaurant == null) {
-      restaurant = new ArrayList<>();
-    }
-
+  
     GetRestaurantsResponse restaurantsResponse = new GetRestaurantsResponse(restaurant);
      
     // System.out.println("Res Called" + restaurantsResponse);
@@ -108,7 +102,6 @@ public class RestaurantServiceImpl implements RestaurantService {
 
       set.addAll(restaurantRepositoryService
           .findRestaurantsByAttributes(lat, lon, str, currentTime, peakHoursServingRadiusInKms));
-
       set.addAll(restaurantRepositoryService
           .findRestaurantsByItemAttributes(lat, lon, str, currentTime,peakHoursServingRadiusInKms));
       set.addAll(restaurantRepositoryService
@@ -118,21 +111,25 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     } else {
       
-
+      System.out.println("Normal Hourse Servicing called");
       set.addAll(restaurantRepositoryService
           .findRestaurantsByAttributes(lat, lon, str, currentTime, normalHoursServingRadiusInKms));
+      
       set.addAll(restaurantRepositoryService
           .findRestaurantsByItemAttributes(lat, lon,str,currentTime,normalHoursServingRadiusInKms));
+          
       set.addAll(restaurantRepositoryService
           .findRestaurantsByItemName(lat, lon, str, currentTime,normalHoursServingRadiusInKms));
+
+      
       set.addAll(restaurantRepositoryService
           .findRestaurantsByName(lat, lon, str, currentTime,normalHoursServingRadiusInKms));
-
+      
     }
 
     restaurant.addAll(set);    
 
-    System.out.println(restaurant);
+    System.out.println("GetRestaurantsResponse : " + restaurant);
 
     GetRestaurantsResponse restaurantsResponse = new GetRestaurantsResponse(restaurant);  
 

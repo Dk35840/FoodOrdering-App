@@ -104,9 +104,11 @@ class RestaurantServiceTest {
 
   @Test
   void normalHourFindRestaurantsSearchQuery() throws IOException {
+
     when(restaurantRepositoryServiceMock.findRestaurantsByName(any(Double.class),
         any(Double.class), any(String.class), any(LocalTime.class), any(Double.class)))
         .thenReturn(loadRestaurantsDuringNormalHours());
+        
     when(restaurantRepositoryServiceMock.findRestaurantsByAttributes(any(Double.class),
         any(Double.class), any(String.class), any(LocalTime.class), any(Double.class)))
         .thenReturn(loadRestaurantsSearchedByAttributes());
