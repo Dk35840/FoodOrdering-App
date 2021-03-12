@@ -65,9 +65,6 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
 
   private ObjectMapper objectMapper = new ObjectMapper();
 
-  //@Autowired
-  
-  
   @Autowired
   private MongoTemplate mongoTemplate;
 
@@ -89,8 +86,6 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
 
   public List<Restaurant> findAllRestaurantsCloseBy(Double latitude, Double longitude,
        LocalTime currentTime, Double servingRadiusInKms) {
-
-   
 
     List<Restaurant> restaurants = null;
 
@@ -296,8 +291,5 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
     }
     return restaurants;
   }
-
-
-
 }
 
