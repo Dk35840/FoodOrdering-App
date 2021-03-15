@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,9 +85,6 @@ public class RestaurantServiceImpl implements RestaurantService {
     Double lat = getRestaurantsRequest.getLatitude();
     Double lon = getRestaurantsRequest.getLongitude();
     String str = getRestaurantsRequest.getSearchFor();
-    
-      
-
     int hour = currentTime.getHour();
     int min = currentTime.getMinute();
 
@@ -113,7 +112,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     } else {
       
-      System.out.println("Normal Hourse Servicing called");
+     
       set.addAll(restaurantRepositoryService
           .findRestaurantsByAttributes(lat, lon, str, currentTime, normalHoursServingRadiusInKms));
       
@@ -147,7 +146,20 @@ public class RestaurantServiceImpl implements RestaurantService {
   public GetRestaurantsResponse findRestaurantsBySearchQueryMt(
       GetRestaurantsRequest getRestaurantsRequest, LocalTime currentTime) {
 
-     return null;
+    Double lat = getRestaurantsRequest.getLatitude();
+    Double lon = getRestaurantsRequest.getLongitude();
+    String str = getRestaurantsRequest.getSearchFor();
+    int hour = currentTime.getHour();
+    int min = currentTime.getMinute();
+    ExecutorService es = Executors.newFixedThreadPool(4);
+    
+    if (hour >= 8 && hour < 10 || hour == 10 && min == 0 || hour >= 13 && hour < 14
+        || hour == 14 && min == 0 || hour >= 19 && hour < 21 || hour == 21 && min == 0) {
+
+    } else {
+
+       } 
+
   }
 }
 
