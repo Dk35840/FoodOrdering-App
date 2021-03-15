@@ -28,8 +28,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -40,8 +45,10 @@ public class RestaurantServiceImpl implements RestaurantService {
   private final Double normalHoursServingRadiusInKms = 5.0;
   @Autowired
   private RestaurantRepositoryService restaurantRepositoryService;
-
-
+  
+  private ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
+  
+  
   @Override
   public GetRestaurantsResponse findAllRestaurantsCloseBy(
       GetRestaurantsRequest getRestaurantsRequest, LocalTime currentTime) {
@@ -87,9 +94,6 @@ public class RestaurantServiceImpl implements RestaurantService {
   public GetRestaurantsResponse findRestaurantsBySearchQuery(
       GetRestaurantsRequest getRestaurantsRequest, LocalTime currentTime) {
     
-    return findRestaurantsBySearchQueryMt(getRestaurantsRequest,currentTime);
-    
-    /**    
     Double lat = getRestaurantsRequest.getLatitude();
     Double lon = getRestaurantsRequest.getLongitude();
     String str = getRestaurantsRequest.getSearchFor();
@@ -130,7 +134,6 @@ public class RestaurantServiceImpl implements RestaurantService {
       set.addAll(restaurantRepositoryService
           .findRestaurantsByItemName(lat, lon, str, currentTime,normalHoursServingRadiusInKms));
 
-      
       set.addAll(restaurantRepositoryService
           .findRestaurantsByName(lat, lon, str, currentTime,normalHoursServingRadiusInKms));
       
@@ -143,7 +146,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     GetRestaurantsResponse restaurantsResponse = new GetRestaurantsResponse(restaurant);  
 
     return restaurantsResponse;
-     */
+     
   }
 
 
@@ -154,6 +157,10 @@ public class RestaurantServiceImpl implements RestaurantService {
   @Override
   public GetRestaurantsResponse findRestaurantsBySearchQueryMt(
       GetRestaurantsRequest getRestaurantsRequest, LocalTime currentTime) {
+    
+    threadPool.setCorePoolSize(5);
+    threadPool.setMaxPoolSize(10);
+    threadPool.afterPropertiesSet();
 
     System.out.println("findRestaurantsBySearchQueryMt : ");    
     Double lat = getRestaurantsRequest.getLatitude();
@@ -161,7 +168,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     String str = getRestaurantsRequest.getSearchFor();
     int hour = currentTime.getHour();
     int min = currentTime.getMinute();
-    ExecutorService es = Executors.newFixedThreadPool(4);
+    
     List<Restaurant> restaurant = new ArrayList<>();
 
     List<Future<List<Restaurant>>> listOfFutureRestaurant = new ArrayList<>();
@@ -177,35 +184,38 @@ public class RestaurantServiceImpl implements RestaurantService {
     if (hour >= 8 && hour < 10 || hour == 10 && min == 0 || hour >= 13 && hour < 14
         || hour == 14 && min == 0 || hour >= 19 && hour < 21 || hour == 21 && min == 0) {
 
-      listOfFutureRestaurant.add(es.submit(new TaskFindRestaurantsByAttributes(lat,
-          lon,str,currentTime,peakHoursServingRadiusInKms)));
-      listOfFutureRestaurant.add(es.submit(new TaskFindRestaurantsByItemAttributes(lat,
+      listOfFutureRestaurant.add(threadPool.submit(new TaskFindRestaurantsByAttributes(lat,
+          lon,str,currentTime,peakHoursServingRadiusInKms,restaurantRepositoryService)));
+
+      listOfFutureRestaurant.add(threadPool.submit(new TaskFindRestaurantsByItemAttributes(lat,
           lon,str,currentTime,peakHoursServingRadiusInKms)));    
-      listOfFutureRestaurant.add(es.submit(new TaskFindRestaurantsByItemName(lat,
+      listOfFutureRestaurant.add(threadPool.submit(new TaskFindRestaurantsByItemName(lat,
           lon,str,currentTime,peakHoursServingRadiusInKms)));
-      listOfFutureRestaurant.add(es.submit(new TaskFindRestaurantsByName(lat,
+      listOfFutureRestaurant.add(threadPool.submit(new TaskFindRestaurantsByName(lat,
           lon,str,currentTime,peakHoursServingRadiusInKms)));
 
     } else {
-      listOfFutureRestaurant.add(es.submit(new TaskFindRestaurantsByAttributes(lat,
-          lon,str,currentTime,normalHoursServingRadiusInKms)));
-      listOfFutureRestaurant.add(es.submit(new TaskFindRestaurantsByItemAttributes(lat,
+      listOfFutureRestaurant.add(threadPool.submit(new TaskFindRestaurantsByAttributes(lat,
+          lon,str,currentTime,normalHoursServingRadiusInKms,restaurantRepositoryService)));
+          
+      listOfFutureRestaurant.add(threadPool.submit(new TaskFindRestaurantsByItemAttributes(lat,
           lon,str,currentTime,normalHoursServingRadiusInKms)));    
-      listOfFutureRestaurant.add(es.submit(new TaskFindRestaurantsByItemName(lat,
+      listOfFutureRestaurant.add(threadPool.submit(new TaskFindRestaurantsByItemName(lat,
           lon,str,currentTime,normalHoursServingRadiusInKms)));
-      listOfFutureRestaurant.add(es.submit(new TaskFindRestaurantsByName(lat,
+      listOfFutureRestaurant.add(threadPool.submit(new TaskFindRestaurantsByName(lat,
           lon,str,currentTime,normalHoursServingRadiusInKms)));
     } 
 
     for (Future<List<Restaurant>> l:listOfFutureRestaurant) {
+    
       try {
-        set.addAll(l.get());
-      } catch (InterruptedException | ExecutionException e) {
+        set.addAll(l.get(100, TimeUnit.MILLISECONDS));
+      
+      } catch (InterruptedException | ExecutionException | TimeoutException e) {
         e.printStackTrace();
       }
-      
+ 
     }
-
     restaurant.addAll(set);    
 
     System.out.println("findRestaurantsBySearchQueryMt : " + restaurant);
@@ -215,4 +225,5 @@ public class RestaurantServiceImpl implements RestaurantService {
     return restaurantsResponse;
   }
 }
+
 

@@ -17,18 +17,19 @@ public class TaskFindRestaurantsByAttributes implements Callable<List<Restaurant
   private String searchString;
   private LocalTime currentTime;
   private Double servingRadiusInKms;
-   
-  @Autowired
-  public RestaurantRepositoryService restaurantRepositoryService;
+  private RestaurantRepositoryService restaurantRepositoryService; 
+
   
   public TaskFindRestaurantsByAttributes(Double latitude, Double longitude, String searchString,
-        LocalTime currentTime, Double servingRadiusInKms) {
+        LocalTime currentTime, Double servingRadiusInKms,
+        RestaurantRepositoryService restaurantRepositoryService) {
 
     this.latitude = latitude;
     this.longitude = longitude;
     this.searchString = searchString;
     this.currentTime =  currentTime;
     this.servingRadiusInKms = servingRadiusInKms;
+    this.restaurantRepositoryService=restaurantRepositoryService;
   }
   
   public List<Restaurant> call() {
