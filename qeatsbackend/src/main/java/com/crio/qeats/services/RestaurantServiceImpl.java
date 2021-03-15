@@ -152,6 +152,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     int hour = currentTime.getHour();
     int min = currentTime.getMinute();
     ExecutorService es = Executors.newFixedThreadPool(4);
+    List<Restaurant> restaurant = new ArrayList<>();
     
     if (hour >= 8 && hour < 10 || hour == 10 && min == 0 || hour >= 13 && hour < 14
         || hour == 14 && min == 0 || hour >= 19 && hour < 21 || hour == 21 && min == 0) {
@@ -160,6 +161,9 @@ public class RestaurantServiceImpl implements RestaurantService {
 
        } 
 
+       GetRestaurantsResponse restaurantsResponse = new GetRestaurantsResponse(restaurant);  
+
+       return restaurantsResponse;
   }
 }
 
