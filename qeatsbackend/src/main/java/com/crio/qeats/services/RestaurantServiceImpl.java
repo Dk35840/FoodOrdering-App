@@ -87,6 +87,9 @@ public class RestaurantServiceImpl implements RestaurantService {
   public GetRestaurantsResponse findRestaurantsBySearchQuery(
       GetRestaurantsRequest getRestaurantsRequest, LocalTime currentTime) {
     
+    return findRestaurantsBySearchQueryMt(getRestaurantsRequest,currentTime);
+    
+    /**    
     Double lat = getRestaurantsRequest.getLatitude();
     Double lon = getRestaurantsRequest.getLongitude();
     String str = getRestaurantsRequest.getSearchFor();
@@ -140,6 +143,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     GetRestaurantsResponse restaurantsResponse = new GetRestaurantsResponse(restaurant);  
 
     return restaurantsResponse;
+     */
   }
 
 
@@ -151,6 +155,7 @@ public class RestaurantServiceImpl implements RestaurantService {
   public GetRestaurantsResponse findRestaurantsBySearchQueryMt(
       GetRestaurantsRequest getRestaurantsRequest, LocalTime currentTime) {
 
+    System.out.println("findRestaurantsBySearchQueryMt : ");    
     Double lat = getRestaurantsRequest.getLatitude();
     Double lon = getRestaurantsRequest.getLongitude();
     String str = getRestaurantsRequest.getSearchFor();
@@ -191,6 +196,15 @@ public class RestaurantServiceImpl implements RestaurantService {
       listOfFutureRestaurant.add(es.submit(new TaskFindRestaurantsByName(lat,
           lon,str,currentTime,normalHoursServingRadiusInKms)));
     } 
+
+    for (Future<List<Restaurant>> l:listOfFutureRestaurant) {
+      try {
+        set.addAll(l.get());
+      } catch (InterruptedException | ExecutionException e) {
+        e.printStackTrace();
+      }
+      
+    }
 
     restaurant.addAll(set);    
 

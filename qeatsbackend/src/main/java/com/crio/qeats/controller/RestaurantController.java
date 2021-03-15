@@ -148,6 +148,9 @@ public class RestaurantController {
        
       System.out.println("GetRestaurantsResponse : " + getRestaurantsResponse);
 
+      if (getRestaurantsResponse == null) {
+        return ResponseEntity.ok().body(null);
+      }
       List<Restaurant> res = getRestaurantsResponse.getRestaurants();
       
       for (Restaurant r:res) {
