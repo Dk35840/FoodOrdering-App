@@ -11,6 +11,11 @@ import com.crio.qeats.dto.Restaurant;
 import com.crio.qeats.exchanges.GetRestaurantsRequest;
 import com.crio.qeats.exchanges.GetRestaurantsResponse;
 import com.crio.qeats.repositoryservices.RestaurantRepositoryService;
+import com.crio.qeats.taskexecutor.TaskFindRestaurantsByAttributes;
+import com.crio.qeats.taskexecutor.TaskFindRestaurantsByItemAttributes;
+import com.crio.qeats.taskexecutor.TaskFindRestaurantsByItemName;
+import com.crio.qeats.taskexecutor.TaskFindRestaurantsByName;
+
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -153,17 +158,47 @@ public class RestaurantServiceImpl implements RestaurantService {
     int min = currentTime.getMinute();
     ExecutorService es = Executors.newFixedThreadPool(4);
     List<Restaurant> restaurant = new ArrayList<>();
-    
+
+    List<Future<List<Restaurant>>> listOfFutureRestaurant = new ArrayList<>();
+
+    if (str.isEmpty()) {
+      return new GetRestaurantsResponse(restaurant);
+    } 
+
+    TreeSet<Restaurant> set = new TreeSet<>((a,b) -> a.getRestaurantId()
+        .compareTo(b.getRestaurantId()));
+
+
     if (hour >= 8 && hour < 10 || hour == 10 && min == 0 || hour >= 13 && hour < 14
         || hour == 14 && min == 0 || hour >= 19 && hour < 21 || hour == 21 && min == 0) {
 
+      listOfFutureRestaurant.add(es.submit(new TaskFindRestaurantsByAttributes(lat,
+          lon,str,currentTime,peakHoursServingRadiusInKms)));
+      listOfFutureRestaurant.add(es.submit(new TaskFindRestaurantsByItemAttributes(lat,
+          lon,str,currentTime,peakHoursServingRadiusInKms)));    
+      listOfFutureRestaurant.add(es.submit(new TaskFindRestaurantsByItemName(lat,
+          lon,str,currentTime,peakHoursServingRadiusInKms)));
+      listOfFutureRestaurant.add(es.submit(new TaskFindRestaurantsByName(lat,
+          lon,str,currentTime,peakHoursServingRadiusInKms)));
+
     } else {
+      listOfFutureRestaurant.add(es.submit(new TaskFindRestaurantsByAttributes(lat,
+          lon,str,currentTime,normalHoursServingRadiusInKms)));
+      listOfFutureRestaurant.add(es.submit(new TaskFindRestaurantsByItemAttributes(lat,
+          lon,str,currentTime,normalHoursServingRadiusInKms)));    
+      listOfFutureRestaurant.add(es.submit(new TaskFindRestaurantsByItemName(lat,
+          lon,str,currentTime,normalHoursServingRadiusInKms)));
+      listOfFutureRestaurant.add(es.submit(new TaskFindRestaurantsByName(lat,
+          lon,str,currentTime,normalHoursServingRadiusInKms)));
+    } 
 
-       } 
+    restaurant.addAll(set);    
 
-       GetRestaurantsResponse restaurantsResponse = new GetRestaurantsResponse(restaurant);  
+    System.out.println("findRestaurantsBySearchQueryMt : " + restaurant);
 
-       return restaurantsResponse;
+    GetRestaurantsResponse restaurantsResponse = new GetRestaurantsResponse(restaurant);  
+
+    return restaurantsResponse;
   }
 }
 
